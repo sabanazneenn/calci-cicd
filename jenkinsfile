@@ -5,7 +5,7 @@ pipeline {
         stage('Clone Repo') {
             steps {
                 // Jenkins clones your GitHub repo here
-                git credentialsId: 'github-pat-cicd', url: 'https://github.com/sabanazneenn/calci-cicd.git'
+                git credentialsId: 'github-pat', url: 'https://github.com/sabanazneenn/calci-cicd.git'
             }
         }
 

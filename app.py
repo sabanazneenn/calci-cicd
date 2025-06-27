@@ -1,52 +1,110 @@
-from flask import Flask, request
+from flask import Flask, request, render_template_string
+import subprocess
+import os
+import traceback
 
 app = Flask(__name__)
 
-html_template = '''
+HTML = '''
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Bash Calculator</title>
+    <title>Simple Calculator</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: #f4f7f9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+            width: 350px;
+        }
+
+        h2 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        input, select, button {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 16px;
+        }
+
+        button {
+            background: #007BFF;
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        button:hover {
+            background: #0056b3;
+        }
+
+        .result {
+            margin-top: 15px;
+            padding: 10px;
+            background: #e9f7ef;
+            border-left: 5px solid #28a745;
+            color: #155724;
+            font-weight: bold;
+            border-radius: 4px;
+        }
+    </style>
 </head>
 <body>
-    <h2>Simple Bash Calculator</h2>
-    <form action="/calculate" method="post">
-        <input type="number" name="num1" placeholder="Enter first number" required><br><br>
-        <input type="number" name="num2" placeholder="Enter second number" required><br><br>
-        <label for="operation">Operation:</label>
-        <select name="operation" required>
-            <option value="+">+</option>
-            <option value="-">-</option>
-            <option value="*">*</option>
-            <option value="/">/</option>
-        </select><br><br>
-        <button type="submit">Calculate</button>
-    </form>
-    {result}
+    <div class="container">
+        <h2>Bash Calculator</h2>
+        <form method="POST">
+            <input type="text" name="num1" placeholder="Enter first number" required>
+            <select name="operation">
+                <option value="+">Addition (+)</option>
+                <option value="-">Subtraction (-)</option>
+                <option value="*">Multiplication (*)</option>
+                <option value="/">Division (/)</option>
+            </select>
+            <input type="text" name="num2" placeholder="Enter second number" required>
+            <button type="submit">Calculate</button>
+        </form>
+        {% if result %}
+            <div class="result">{{ result }}</div>
+        {% endif %}
+    </div>
 </body>
 </html>
 '''
 
-import subprocess
+@app.route('/', methods=['GET', 'POST'])
+def calc():
+    result = None
+    if request.method == 'POST':
+        try:
+            num1 = request.form['num1']
+            num2 = request.form['num2']
+            operation = request.form['operation']
+            script_path = os.path.join(os.path.dirname(__file__), 'calci.sh')
 
-@app.route("/", methods=["GET"])
-def index():
-    return html_template.format(result="")
+            output = subprocess.check_output(['bash', script_path, num1, num2, operation])
+            result = output.decode('utf-8').strip()
+        except Exception as e:
+            print("ERROR:", traceback.format_exc())
+            result = f"Error: {str(e)}"
+    return render_template_string(HTML, result=result)
 
-@app.route("/calculate", methods=["POST"])
-def calculate():
-    num1 = request.form["num1"]
-    num2 = request.form["num2"]
-    operation = request.form["operation"]
-
-    try:
-        output = subprocess.check_output(["./calci.sh", num1, num2, operation])
-        result = output.decode("utf-8").strip()
-    except subprocess.CalledProcessError as e:
-        result = f"<p style='color:red;'>Error: {e.output.decode('utf-8')}</p>"
-
-    return html_template.format(result=f"<h3>{result}</h3>")
-
-if __name__ == "__main__":
-    app.run(debug=True, host="0.0.0.0")
+if __name__ == '__main__':
+    app.run(debug=True, host='0.0.0.0')
 

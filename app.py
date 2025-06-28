@@ -5,57 +5,57 @@ import traceback
 
 app = Flask(__name__)
 
-HTML = '''
+HTML = """
 <!DOCTYPE html>
 <html>
 <head>
     <title>Simple Calculator</title>
     <style>
-        body {
+        body {{
             font-family: 'Segoe UI', sans-serif;
             background: #f4f7f9;
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
-        }
+        }}
 
-        .container {
+        .container {{
             background: white;
             padding: 30px;
             border-radius: 12px;
-            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
             width: 350px;
-        }
+        }}
 
-        h2 {
+        h2 {{
             text-align: center;
             color: #333;
             margin-bottom: 20px;
-        }
+        }}
 
-        input, select, button {
+        input, select, button {{
             width: 100%;
             padding: 12px;
             margin: 10px 0;
             border: 1px solid #ccc;
             border-radius: 6px;
             font-size: 16px;
-        }
+        }}
 
-        button {
+        button {{
             background: #007BFF;
             color: white;
             border: none;
             cursor: pointer;
             transition: background 0.3s ease;
-        }
+        }}
 
-        button:hover {
+        button:hover {{
             background: #0056b3;
-        }
+        }}
 
-        .result {
+        .result {{
             margin-top: 15px;
             padding: 10px;
             background: #e9f7ef;
@@ -63,13 +63,13 @@ HTML = '''
             color: #155724;
             font-weight: bold;
             border-radius: 4px;
-        }
+        }}
     </style>
 </head>
 <body>
     <div class="container">
         <h2>Bash Calculator</h2>
-        <form method="POST">
+        <form method="post">
             <input type="text" name="num1" placeholder="Enter first number" required>
             <select name="operation">
                 <option value="+">Addition (+)</option>
@@ -86,7 +86,7 @@ HTML = '''
     </div>
 </body>
 </html>
-'''
+"""
 
 @app.route('/', methods=['GET', 'POST'])
 def calc():
